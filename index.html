@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule Engine</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+</head>
+<body>
+    <h1>Rule Engine</h1>
+
+    <!-- Form to input rule -->
+    <div>
+        <h2>Create Rule</h2>
+        <input type="text" id="ruleInput" placeholder="Enter rule, e.g. age > 30 AND salary > 50000">
+        <button onclick="createRule()">Create Rule</button>
+        <p id="ruleAst"></p>
+    </div>
+
+    <!-- Form to evaluate rule -->
+    <div>
+        <h2>Evaluate Rule</h2>
+        <input type="text" id="userData" placeholder="Enter user data as JSON, e.g. {&quot;age&quot;: 35}">
+        <input type="text" id="astInput" placeholder="Enter AST representation">
+        <button onclick="evaluateRule()">Evaluate</button>
+        <p id="evalResult"></p>
+    </div>
+
+    <script>
+        function createRule() {
+            const rule = document.getElementById('ruleInput').value;
+            axios.post('/api/create_rule', { rule_string: rule })
+                .then(response => {
+                    document.getElementById('ruleAst').innerText = 'AST: ' + response.data.ast;
+                })
+                .catch(error => console.error(error));
+        }
+
+        function evaluateRule() {
+            const userData = JSON.parse(document.getElementById('userData').value);
+            const ast = document.getElementById('astInput').value;
+            
+            axios.post('/api/evaluate_rule', { user_data: userData, ast: ast })
+                .then(response => {
+                    document.getElementById('evalResult').innerText = 'Result: ' + response.data.result;
+                })
+                .catch(error => console.error(error));
+        }
+    </script>
+</body>
+</html>
